@@ -5,6 +5,5 @@
   "windowsMcpVersion": "0.8.5",
   "playwrightMcpVersion": "0.0.86",
   "provider": "anthropic",
-  "model": "claude-sonnet-5-5",
-  "repo": "Samski7/goose-installer"
+  "model": "claude-sonnet-5-5"
 }

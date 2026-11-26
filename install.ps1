@@ -53,7 +53,8 @@ function Test-Key($k) {
     } catch { return $null }
 }
 if ($Update) {
-    Write-Host "Update: de bestaande toegangssleutel blijft behouden."
+    if (-not (Test-Path (Join-Path $InstallRoot 'versie.json'))) { Fail "Goose-installer is nog niet geinstalleerd op deze pc. Gebruik Installeer.cmd." }
+    Write-Host "Update: de bestaande API-sleutel blijft behouden."
 } else {
     if (-not $ApiKey) {
         # hidden input: the key is never shown on screen
