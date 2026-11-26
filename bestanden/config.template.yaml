@@ -1,0 +1,62 @@
+GOOSE_PROVIDER: {{PROVIDER}}
+GOOSE_MODEL: {{MODEL}}
+GOOSE_MODE: smart_approve
+GOOSE_TELEMETRY_ENABLED: false
+extensions:
+  developer:
+    enabled: true
+    type: builtin
+    name: developer
+    description: Write and edit files, and execute shell commands
+    display_name: Developer
+    timeout: 300
+    bundled: true
+  computercontroller:
+    enabled: true
+    type: builtin
+    name: computercontroller
+    description: General computer control tools that don't require you to be a developer or engineer.
+    display_name: Computer Controller
+    timeout: 300
+    bundled: true
+  extensionmanager:
+    enabled: true
+    type: platform
+    name: Extension Manager
+    description: Enable extension management tools for discovering, enabling, and disabling extensions
+    display_name: Extension Manager
+    bundled: true
+  analyze:
+    enabled: false
+    type: platform
+    name: analyze
+    description: 'Analyze code structure with tree-sitter: directory overviews, file details, symbol call graphs'
+    display_name: Analyze
+    bundled: true
+  windowsmcp:
+    enabled: true
+    name: windowsmcp
+    description: Windows-apps besturen (UI-boom, klikken, typen, screenshots). PowerShell, FileSystem, Registry, Process en Scrape zijn uitgeschakeld.
+    type: stdio
+    cmd: {{WM_PYTHON}}
+    args:
+    - -m
+    - windows_mcp
+    - serve
+    - --exclude-tools
+    - PowerShell,FileSystem,Registry,Process,Scrape
+    envs:
+      ANONYMIZED_TELEMETRY: 'false'
+    timeout: 300
+  playwright:
+    enabled: false
+    name: playwright
+    description: Browser besturen via Playwright in een apart Chrome-profiel (niet ingelogd). Standaard uit; wordt aangezet wanneer een taak de browser nodig heeft.
+    type: stdio
+    cmd: {{NODE}}
+    args:
+    - {{PW_CLI}}
+    - --browser
+    - chrome
+    envs: {}
+    timeout: 300

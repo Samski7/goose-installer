@@ -1,0 +1,10 @@
+{
+  "naam": "Goose-installer",
+  "versie": "1.0.0",
+  "gooseVersion": "1.60.2",
+  "windowsMcpVersion": "0.8.5",
+  "playwrightMcpVersion": "0.0.86",
+  "provider": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "repo": "Samski7/goose-installer"
+}

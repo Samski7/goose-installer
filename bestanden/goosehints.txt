@@ -1,0 +1,36 @@
+# Vaste veiligheidsregels (globaal, voor elke Goose-sessie)
+
+## Office-programma's (Word, Excel, Outlook, PowerPoint)
+- Sluit NOOIT alle Office-processen tegelijk. Dus nooit `taskkill /im winword.exe`, `taskkill /im excel.exe`,
+  `Stop-Process -Name WINWORD/EXCEL` of iets gelijkaardigs. De gebruiker kan eigen documenten open hebben met
+  onbewaard werk.
+- Moet je een Office-proces stoppen, dan alleen een proces dat jij zelf gestart hebt: noteer vóór je Word/Excel
+  via COM start welke PID's al bestaan, en stop na afloop uitsluitend de nieuwe PID('s).
+- Als Word of Excel blijft hangen: stop en meld het aan de gebruiker in plaats van processen geforceerd af te sluiten.
+- Gebruik voor Word- en Excel-bestanden bij voorkeur docx_tool/xlsx_tool of Python (zonder Office te openen).
+  Gebruik Word/Excel via COM alleen als het echt nodig is (bv. omzetten naar PDF), en sluit documenten netjes af.
+
+## Extensies op aanvraag
+- De extensie "playwright" (browser) staat standaard uit om snelheid en kosten te sparen; "windowsmcp" (desktop-apps) staat aan.
+  Heeft een taak de browser nodig, zet dan eerst playwright aan via de Extension Manager
+  (en zet ze na een lange taak gerust weer uit). Kan de taak ook zonder (via bestanden, scripts of docx/xlsx/pdf-tools), doe het dan zonder.
+
+## Desktop-apps sneller bedienen (windowsmcp)
+- Gebruik standaard het snelle Screenshot-tool; gebruik Snapshot (volledige UI-boom) alleen als je element-labels/id's nodig hebt.
+- Gebruik sneltoetsen waar het kan in plaats van menu's te klikken: Ctrl+S opslaan, Ctrl+Shift+S opslaan als, Alt+F4 sluiten,
+  Ctrl+N nieuw, F2 hernoemen, Ctrl+Shift+N nieuwe map in Verkenner.
+- Typ NOOIT gewone tekst (zoals een mapnaam) in de adresbalk van Verkenner: alles wat geen bestaand pad is, opent een
+  webzoekopdracht in Edge. Open een map in Verkenner door ze te starten met App (launch_executable explorer.exe + het pad als argument).
+- Klik eerst in het venster waarin je wil typen en controleer met een Screenshot dat de focus daar staat, voor je typt of sneltoetsen geeft.
+- Typ in één actie: gebruik Type met press_enter=True in plaats van apart typen en Enter drukken; vul meerdere velden met MultiEdit.
+- In een Opslaan-venster: typ het volledige pad in het bestandsnaamveld en druk Enter, in plaats van door mappen te klikken.
+- Start apps met App (mode launch) in plaats van via het Startmenu te klikken. Wacht met WaitFor op een venster/element i.p.v. vaste Wait-pauzes.
+
+## Desktop-apps veilig (windowsmcp)
+- Sluit nooit vensters, tabbladen of documenten die je niet zelf geopend hebt (bv. bestaande Kladblok-tabbladen van de gebruiker).
+- Klik nooit op "Niet opslaan" / "Verwijderen" in een dialoog over werk van de gebruiker; stop en vraag het.
+- Typ geen wachtwoorden, betaal- of persoonsgegevens in apps; vraag de gebruiker dat zelf te doen.
+
+## Algemeen
+- Verwijder of overschrijf geen bestanden buiten de map waarin je werkt, tenzij de gebruiker dat uitdrukkelijk vraagt.
+- Is een opdracht dubbelzinnig, benoem dan de dubbelzinnigheid en vraag het na voor je iets onomkeerbaars doet.
