@@ -7,7 +7,8 @@ param(
     [string]$PythonPath,
     [switch]$SkipSoftware,   # do not install Goose/Node/Python via winget (they must already exist)
     [switch]$NoEnvKey,       # do not store the API key (testing)
-    [switch]$Update          # re-install files and extensions, keep the API key
+    [switch]$Update,         # re-install files and extensions, keep the API key
+    [switch]$NoAutostart     # do not start the cost guard at Windows logon (testing)
 )
 $ErrorActionPreference = 'Stop'
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -131,10 +132,31 @@ if ($firstInstall) {
     [IO.File]::WriteAllText((Join-Path $InstallRoot 'origineel.json'), (@{ hadConfig = [bool](Test-Path $cfg); hadHints = [bool](Test-Path $hints) } | ConvertTo-Json), $utf8)
 }
 $t = [IO.File]::ReadAllText((Join-Path $here 'bestanden\config.template.yaml'), $utf8)
-$t = $t.Replace('{{PROVIDER}}', $pk.provider).Replace('{{MODEL}}', $pk.model).Replace('{{WM_PYTHON}}', "$wm\Scripts\python.exe").Replace('{{NODE}}', $node).Replace('{{PW_CLI}}', $pwCli)
+$t = $t.Replace('{{PROVIDER}}', $pk.provider).Replace('{{MODEL}}', $pk.model).Replace('{{SUBMODEL}}', $pk.subagentModel).Replace('{{HOST}}', "http://127.0.0.1:$($pk.wachtPoort)").Replace('{{WM_PYTHON}}', "$wm\Scripts\python.exe").Replace('{{NODE}}', $node).Replace('{{PW_CLI}}', $pwCli)
 [IO.File]::WriteAllText($cfg, $t, $utf8)
 Copy-Item (Join-Path $here 'bestanden\goosehints.txt') $hints -Force
 Write-Host "Instellingen en veiligheidsregels geschreven."
+
+# Cost guard: local pass-through to Anthropic with a daily limit (EUR) and only the allowed models
+$kw = Join-Path $InstallRoot 'kostenwacht'
+New-Item -ItemType Directory -Force $kw | Out-Null
+Get-CimInstance Win32_Process -Filter "Name like 'python%'" | Where-Object { $_.CommandLine -like "*$kw*" } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
+Copy-Item (Join-Path $here 'bestanden\kostenwacht.py') $kw -Force
+$kwSet = @{ limietEurPerDag = $pk.limietEurPerDag; usdPerEur = $pk.usdPerEur; wachtPoort = $pk.wachtPoort; toegelatenModellen = @($pk.toegelatenModellen) } | ConvertTo-Json
+[IO.File]::WriteAllText((Join-Path $kw 'kostenwacht.json'), $kwSet, $utf8)
+$pyw = Join-Path $wm 'Scripts\pythonw.exe'
+$kwArgs = "`"$kw\kostenwacht.py`" `"$kw\kostenwacht.json`""
+Start-Process $pyw -ArgumentList $kwArgs -WindowStyle Hidden
+if (-not $NoAutostart) {
+    $lnk = Join-Path ([Environment]::GetFolderPath('Startup')) 'Goose kostenwacht.lnk'
+    $sc = (New-Object -ComObject WScript.Shell).CreateShortcut($lnk)
+    $sc.TargetPath = $pyw; $sc.Arguments = $kwArgs; $sc.WindowStyle = 7; $sc.Description = 'Daglimiet voor Goose'
+    $sc.Save()
+}
+$ok = $false
+foreach ($i in 1..20) { try { Invoke-RestMethod "http://127.0.0.1:$($pk.wachtPoort)/verbruik" -TimeoutSec 2 | Out-Null; $ok = $true; break } catch { Start-Sleep -Milliseconds 500 } }
+if (-not $ok) { Fail "De kostenwacht start niet (poort $($pk.wachtPoort))." }
+Write-Host ("Kostenwacht actief: max EUR {0:N2} per dag, modellen: {1}." -f [double]$pk.limietEurPerDag, ($pk.toegelatenModellen -join ', '))
 
 Step "6/6 Toegangssleutel opslaan"
 if (-not $Update) {

@@ -10,6 +10,11 @@ if (-not $Force) {
     $a = Read-Host "Goose-installer verwijderen (extensies, instellingen van het pakket, API-sleutel)? Typ JA"
     if ($a -ne 'JA') { Write-Host "Geannuleerd."; exit 0 }
 }
+# stop the cost guard and remove its autostart
+Get-CimInstance Win32_Process -Filter "Name like 'python%'" | Where-Object { $_.CommandLine -like "*$InstallRoot\kostenwacht*" } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
+$lnk = Join-Path ([Environment]::GetFolderPath('Startup')) 'Goose kostenwacht.lnk'
+if (Test-Path $lnk) { Remove-Item $lnk -Force }
+Start-Sleep -Milliseconds 500
 $cfgDir = Join-Path $ConfigRoot 'config'
 foreach ($name in 'config.yaml', '.goosehints') {
     $f = Join-Path $cfgDir $name
