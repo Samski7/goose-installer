@@ -16,9 +16,7 @@ Andere modellen zijn geblokkeerd.
 **Daglimiet: €1 tokenverbruik per dag.** Een kleine kostenwacht op je pc telt het verbruik. Is de limiet bereikt, dan meldt Goose "Daglimiet bereikt" en kan je de volgende dag weer verder. Je verbruik van vandaag zie je met `Verbruik.cmd`.
 
 ## Installeren
-Deze repository is privé. Je hebt toegang nodig, of je krijgt de zip rechtstreeks toegestuurd.
-
-1. Klik hierboven op de groene knop **Code** en dan op **Download ZIP**. Heb je de zip toegestuurd gekregen, dan sla je deze stap over.
+1. Klik hierboven op de groene knop **Code** en dan op **Download ZIP**. Een GitHub-account is niet nodig.
 2. Pak de zip uit.
 3. Dubbelklik op **Installeer.cmd**. Krijg je een blauw venster "Windows heeft uw pc beschermd"? Klik dan op *Meer informatie* en daarna op *Toch uitvoeren*.
 4. Plak de API-sleutel die je kreeg. Je ziet niets verschijnen terwijl je plakt, dat is normaal. Druk daarna op Enter.
